@@ -14,6 +14,7 @@ import {
   LoginError,
   LoginLink,
 } from "./Login.styled.js";
+import { signIn } from "../../services/api.js";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
@@ -35,24 +36,33 @@ const Login = () => {
     if (error) setError("");
   };
 
-  const handleLogin = () => {
-    if (!form.login.trim() || !form.password.trim()) {
+  const isFieldValid = (field) => form[field].trim() !== "";
+  const isFormInvalid = !isFieldValid("login") || !isFieldValid("password");
+
+  const handleLogin = async () => {
+    if (isFormInvalid) {
       setError(
         "Упс! Введенные вами данные некорректны. Введите данные корректно и повторите попытку."
       );
       return;
     }
 
-    const fakeUser = {
-      name: form.login,
-      token: "123456",
-    };
+    try {
+      const userData = await signIn({
+        login: form.login,
+        password: form.password,
+      });
 
-    login(fakeUser);
-    navigate("/");
+      login({
+        name: userData.name,
+        token: userData.token,
+      });
+
+      navigate("/");
+    } catch (err) {
+      setError(err.message || "Ошибка входа");
+    }
   };
-
-  const isFieldValid = (field) => form[field].trim() !== "";
 
   return (
     <LoginBackground>
@@ -72,7 +82,9 @@ const Login = () => {
             <LoginInput
               type="text"
               name="login"
-              placeholder={error && !isFieldValid("login") ? "Эл. почта *" : "Эл. почта"}
+              placeholder={
+                error && !isFieldValid("login") ? "Эл. почта *" : "Эл. почта"
+              }
               value={form.login}
               onChange={handleChange}
               required
@@ -82,7 +94,9 @@ const Login = () => {
             <LoginInput
               type="password"
               name="password"
-              placeholder={error && !isFieldValid("password") ? "Пароль *" : "Пароль"}
+              placeholder={
+                error && !isFieldValid("password") ? "Пароль *" : "Пароль"
+              }
               value={form.password}
               onChange={handleChange}
               required
@@ -91,7 +105,11 @@ const Login = () => {
             />
           </LoginInputBlock>
           {error && <LoginError>{error}</LoginError>}
-          <LoginButton type="button" onClick={handleLogin}>
+          <LoginButton
+            type="button"
+            onClick={handleLogin}
+            disabled={!!error || isFormInvalid}
+          >
             Войти
           </LoginButton>
           <LoginLink>
@@ -105,4 +123,3 @@ const Login = () => {
 };
 
 export default Login;
-
