@@ -18,6 +18,7 @@ export const HomeHeader = styled.div`
   background: rgb(255, 255, 255);
   align-items: center;
   justify-content: space-around;
+  z-index: 10;
 `;
 
 export const HomeLogo = styled.div`
