@@ -117,16 +117,26 @@ export const RegisterButton = styled.button`
   width: 313px;
   height: 39px;
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
+  gap: 12px;
   padding: 12px;
+
   border-radius: 6px;
-  background: rgb(115, 52, 234);
   border: none;
-  color: white;
+  color: rgb(255, 255, 255);
   font-family: "Montserrat";
   font-size: 12px;
   font-weight: 600;
+  line-height: 15px;
+  letter-spacing: 0px;
+  text-align: center;
+
+  background: ${(props) =>
+    props.disabled ? "rgb(153, 153, 153)" : "rgb(115, 52, 234)"};
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+  transition: background 0.3s ease;
 `;
 
 export const RegisterError = styled.p`

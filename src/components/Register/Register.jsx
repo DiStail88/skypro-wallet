@@ -13,6 +13,7 @@ import {
   RegisterError,
   RegisterLink,
 } from "./Register.styled";
+import { signUp } from "../../services/api";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -34,20 +35,34 @@ const Register = () => {
     if (error) setError("");
   };
 
-  const handleRegister = () => {
-    const { username, login, password } = form;
+  const handleRegister = async () => {
+    const { username, login: email, password } = form;
 
-    if (!username.trim() || !login.trim() || !password.trim()) {
+    if (!username.trim() || !email.trim() || !password.trim()) {
       setError(
         "Упс! Введенные вами данные некорректны. Введите данные корректно и повторите попытку."
       );
       return;
     }
-    console.log("Registered:", form);
-    navigate("/login");
+
+    try {
+      await signUp({
+        name: username,
+        login: email,
+        password,
+      });
+
+      navigate("/login");
+    } catch (err) {
+      setError(err.message || "Ошибка регистрации");
+    }
   };
 
   const isFieldValid = (field) => form[field].trim() !== "";
+  const isFormInvalid =
+    !isFieldValid("username") ||
+    !isFieldValid("login") ||
+    !isFieldValid("password");
 
   return (
     <RegisterBackground>
@@ -67,7 +82,11 @@ const Register = () => {
             <RegisterInput
               type="text"
               name="username"
-              placeholder={error && !isFieldValid("username") ? "Имя пользователя *" : "Имя пользователя"}
+              placeholder={
+                error && !isFieldValid("username")
+                  ? "Имя пользователя *"
+                  : "Имя пользователя"
+              }
               value={form.username}
               onChange={handleChange}
               $hasError={!!error && !isFieldValid("username")}
@@ -77,7 +96,9 @@ const Register = () => {
             <RegisterInput
               type="text"
               name="login"
-              placeholder={error && !isFieldValid("login") ? "Эл. почта *" : "Эл. почта"}
+              placeholder={
+                error && !isFieldValid("login") ? "Эл. почта *" : "Эл. почта"
+              }
               value={form.login}
               onChange={handleChange}
               $hasError={!!error && !isFieldValid("login")}
@@ -87,7 +108,9 @@ const Register = () => {
             <RegisterInput
               type="password"
               name="password"
-              placeholder={error && !isFieldValid("password") ? "Пароль *" : "Пароль"}
+              placeholder={
+                error && !isFieldValid("password") ? "Пароль *" : "Пароль"
+              }
               value={form.password}
               onChange={handleChange}
               $hasError={!!error && !isFieldValid("password")}
@@ -96,7 +119,11 @@ const Register = () => {
             />
           </RegisterInputBlock>
           {error && <RegisterError>{error}</RegisterError>}
-          <RegisterButton type="button" onClick={handleRegister}>
+          <RegisterButton
+            type="button"
+            onClick={handleRegister}
+            disabled={!!error || isFormInvalid}
+          >
             Зарегистрироваться
           </RegisterButton>
           <RegisterLink>

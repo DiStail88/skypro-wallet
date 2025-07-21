@@ -5,23 +5,32 @@ const BASE_URL = "https://wedev-api.sky.pro/api";
 const instance = axios.create({
   baseURL: BASE_URL,
   headers: {
-    "Content-Type": "application/json",
+    "Content-Type": "",
   },
 });
 
+// Получение токена из localStorage
+const getAuthToken = () => {
+  try {
+    const storedUser = localStorage.getItem("userInfo");
+    return storedUser ? JSON.parse(storedUser).token : null;
+  } catch {
+    return null;
+  }
+};
+
+// Получение пользователей
 export const fetchUsers = async () => {
   try {
     const response = await instance.get("/user");
     return response.data.users;
   } catch (error) {
-    console.error(
-      "Ошибка получения пользователей:",
-      error.response?.data || error.message
-    );
+    console.error("Ошибка получения пользователей:", error.response?.data || error.message);
     throw new Error("Не удалось получить список пользователей");
   }
 };
 
+// Регистрация
 export async function signUp({ name, login, password }) {
   try {
     const response = await axios.post(
@@ -37,12 +46,12 @@ export async function signUp({ name, login, password }) {
   } catch (error) {
     console.error("Ошибка регистрации:", error.response?.data || error.message);
     throw new Error(
-      error.response?.data?.error ||
-        "Пользователь с таким логином уже существует"
+      error.response?.data?.error || "Пользователь с таким логином уже существует"
     );
   }
 }
 
+// Авторизация
 export async function signIn(userData) {
   try {
     const response = await axios.post(BASE_URL + "/user/login", userData, {
@@ -50,94 +59,64 @@ export async function signIn(userData) {
         "Content-Type": "",
       },
     });
-    return response.data.user;
+    const { user, token } = response.data;
+    localStorage.setItem("token", token);
+    localStorage.setItem("userInfo", JSON.stringify({ ...user, token }));
+    return user;
   } catch (error) {
     console.error("Ошибка авторизации:", error.response?.data || error.message);
     throw new Error(error.response?.data?.error || "Неверный логин или пароль");
   }
 }
 
-export const fetchTasks = async (token) => {
+// Получение транзакций
+export const getTransactions = async (sortBy = "", filterBy = "") => {
+  const token = getAuthToken();
+
   try {
-    const response = await instance.get("/kanban", {
+    const params = new URLSearchParams();
+    if (sortBy) params.append("sortBy", sortBy);
+    if (filterBy) params.append("filterBy", filterBy);
+
+    const response = await instance.get(`/transactions?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data.tasks;
+    return response.data;
   } catch (error) {
-    console.error(
-      "Ошибка получения задач:",
-      error.response?.data || error.message
-    );
-    throw new Error("Не удалось получить задачи");
+    console.error("Ошибка получения транзакций:", error.response?.data || error.message);
+    throw new Error("Не удалось получить транзакции");
   }
 };
 
-export const fetchTaskById = async (id, token) => {
-  try {
-    const response = await instance.get(`/kanban/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data.task;
-  } catch (error) {
-    console.error(
-      "Ошибка получения задачи:",
-      error.response?.data || error.message
-    );
-    throw new Error("Задача не найдена");
-  }
-};
+// Добавление транзакции
+export const addTransaction = async (transaction) => {
+  const token = getAuthToken();
 
-export const addTask = async (taskData, token) => {
   try {
-    const response = await axios.post(`${BASE_URL}/kanban`, taskData, {
+    const response = await instance.post("/transactions", transaction, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "",
       },
     });
-    return response.data.tasks;
+    return response.data;
   } catch (error) {
-    console.error(
-      "Ошибка добавления задачи:",
-      error.response?.data || error.message
-    );
-    throw new Error(
-      error.response?.data?.error || "Не удалось добавить задачу"
-    );
+    console.error("Ошибка при добавлении транзакции:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.error || "Не удалось добавить транзакцию");
   }
 };
 
-export const updateTask = async (id, taskData, token) => {
+// Удаление транзакции
+export const deleteTransaction = async (id) => {
+  const token = getAuthToken();
+
   try {
-    const response = await axios.put(`${BASE_URL}/kanban/${id}`, taskData, {
+    await instance.delete(`/transactions/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "",
       },
     });
-    return response.data.tasks;
   } catch (error) {
-    console.error(
-      "Ошибка изменения задачи:",
-      error.response?.data || error.message
-    );
-    throw new Error(
-      error.response?.data?.error || "Не удалось изменить задачу"
-    );
-  }
-};
-
-export const deleteTask = async (id, token) => {
-  try {
-    const response = await instance.delete(`/kanban/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data.tasks;
-  } catch (error) {
-    console.error(
-      "Ошибка удаления задачи:",
-      error.response?.data || error.message
-    );
-    throw new Error("Не удалось удалить задачу");
+    console.error("Ошибка при удалении транзакции:", error.response?.data || error.message);
+    throw new Error("Не удалось удалить транзакцию");
   }
 };
