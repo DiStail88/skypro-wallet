@@ -12,6 +12,7 @@ import {
   HomeLink,
   HomeHead,
   HomeBlock,
+  HomeBB
 } from "./Home.styled.js";
 import { AuthContext } from "../../context/AuthContext";
 import GlobalStyle from "../../GlobalStyle.js";
@@ -77,21 +78,23 @@ const Home = () => {
           </HomeLinkBlock>
           <HomePopExit onClick={handleLogout}>Выйти</HomePopExit>
         </HomeHeader>
-        <HomeHead>Мои расходы</HomeHead>
-        <HomeBlock>
-          {" "}
-          {isLoading ? (
-            <p>Загрузка...</p>
-          ) : error ? (
-            <p>{error}</p>
-          ) : (
-            <TransactionsTable
-              transactions={transactions}
-              onDelete={handleDeleteTransaction}
-            />
-          )}
-          <AddTransactions onTransactionAdded={handleTransactionAdded} />
-        </HomeBlock>
+        <HomeBB>
+          <HomeHead>Мои расходы</HomeHead>
+          <HomeBlock>
+            {" "}
+            {isLoading ? (
+              <p>Загрузка...</p>
+            ) : error ? (
+              <p>{error}</p>
+            ) : (
+              <TransactionsTable
+                transactions={transactions}
+                onDelete={handleDeleteTransaction}
+              />
+            )}
+            <AddTransactions onTransactionAdded={handleTransactionAdded} />
+          </HomeBlock>
+        </HomeBB>
       </HomeBackground>
     </>
   );
