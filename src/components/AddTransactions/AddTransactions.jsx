@@ -197,15 +197,14 @@ const AddTransactions = ({ onTransactionAdded }) => {
 
     try {
       const [day, month, year] = formData.date.split(".");
-      const isoDate = new Date(
-        `${year}-${month}-${day}T00:00:00`
-      ).toISOString();
+      const dateObj = new Date(`${year}-${month}-${day}`);
+      dateObj.setHours(12, 0, 0, 0); // Устанавливаем полдень, чтобы избежать смещения даты из-за часовых поясов
 
       const payload = {
         description: formData.description.trim(),
         sum: Number(formData.sum),
         category: formData.category,
-        date: isoDate,
+        date: dateObj.toISOString(),
       };
 
       await addTransaction(payload);

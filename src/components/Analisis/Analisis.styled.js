@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
 
-export const HomeBackground = styled.div`
+export const AnalisisBackground = styled.div`
   width: 100vw;
   height: 870px;
 
@@ -9,7 +9,7 @@ export const HomeBackground = styled.div`
   background: rgb(244, 245, 246);
 `;
 
-export const HomeHeader = styled.div`
+export const AnalisisHeader = styled.div`
   width: 100vw;
   height: 64px;
   position: absolute;
@@ -21,12 +21,12 @@ export const HomeHeader = styled.div`
   z-index: 10;
 `;
 
-export const HomeLogo = styled.div`
+export const AnalisisLogo = styled.div`
   width: 143.68px;
   height: 19px;
 `;
 
-export const HomePopExit = styled.a`
+export const AnalisisPopExit = styled.a`
   width: 49px;
   height: 24px;
   color: rgb(0, 0, 0);
@@ -43,7 +43,7 @@ export const HomePopExit = styled.a`
   }
 `;
 
-export const HomeLinkBlock = styled.div`
+export const AnalisisLinkBlock = styled.div`
   min-width: 300px;
   height: 24px;
   display: flex;
@@ -54,14 +54,14 @@ export const HomeLinkBlock = styled.div`
   padding: 0px;
 `;
 
-export const HomeBB = styled.div`
+export const AnalisisBB = styled.div`
   display: flex;
   flex-direction: column;
   align-content: center;
   flex-wrap: wrap;
 `;
 
-export const HomeLink = styled(NavLink)`
+export const AnalisisLink = styled(NavLink)`
   color: rgb(0, 0, 0);
   font-family: Montserrat;
   font-size: 14px;
@@ -78,7 +78,7 @@ export const HomeLink = styled(NavLink)`
   }
 `;
 
-export const HomeHead = styled.h1`
+export const AnalisisHead = styled.h1`
   color: rgb(0, 0, 0);
   font-family: Montserrat;
   font-size: 32px;
@@ -87,17 +87,51 @@ export const HomeHead = styled.h1`
   letter-spacing: 0px;
   text-align: left;
   padding-top: 100px;
-  padding-left: 120px;
   position: relative;
 `;
 
-export const HomeBlock = styled.div`
+export const AnalisisBlock = styled.div`
   padding-top: 32px;
   display: flex;
   gap: 34px;
 `;
 
+export const AnalisisGrafBlock = styled.div`
+  width: 789px;
+  height: 540px;
+  border-radius: 30px;
+  padding: 32px;
+  box-shadow: 0px 20px 67px -12px rgba(0, 0, 0, 0.13);
+  background: rgb(255, 255, 255);
+`;
+
+export const CalendarBlock = styled.div``;
+
+// export const AnalisisGrafBlock = styled.div`
+
+// `;
+
 // export const HomeBlock = styled.div`
+
+// `;
+
+// export const AnalisisGrafBlock = styled.div`
+
+// `;
+
+// export const HomeBlock = styled.div`
+
+// `;
+
+// export const AnalisisGrafBlock = styled.div`
+
+// `;
+
+// export const HomeBlock = styled.div`
+
+// `;
+
+// export const AnalisisGrafBlock = styled.div`
 
 // `;
 

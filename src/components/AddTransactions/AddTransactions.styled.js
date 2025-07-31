@@ -17,7 +17,6 @@ export const AddFormBlock = styled.div`
   border-radius: 30px;
 
   box-shadow: 0px 20px 67px -12px rgba(0, 0, 0, 0.13);
-  /* Skyeng b2b / White */
   background: rgb(255, 255, 255);
 `;
 
@@ -42,13 +41,12 @@ export const CategoryButton = styled.button`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-
   padding: 8px 20px;
   border: none;
   border-radius: 30px;
-  background: ${({ active }) =>
-    active ? "rgb(241, 235, 253)" : "rgb(244, 245, 246)"};
-  color: ${({ active }) => (active ? "rgb(115, 52, 234)" : "rgb(0, 0, 0)")};
+  background: ${({ $active }) =>
+    $active ? "rgb(241, 235, 253)" : "rgb(244, 245, 246)"};
+  color: ${({ $active }) => ($active ? "rgb(115, 52, 234)" : "rgb(0, 0, 0)")};
 
   font-family: Montserrat;
   font-size: 12px;
