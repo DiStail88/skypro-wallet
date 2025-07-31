@@ -14,7 +14,7 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement);
 
-const CategoryChart = ({ transactions = [], selectedDate }) => {
+const CategoryChart = ({ transactions = [], dateRange }) => {
   const formatAmount = (amount) => {
     return (
       new Intl.NumberFormat("ru-RU", {
@@ -48,13 +48,17 @@ const CategoryChart = ({ transactions = [], selectedDate }) => {
 
   let data = { ...initData };
   let totalAmount = 0;
-  let dateString = "";
+  let rangeString = "";
 
-  if (selectedDate) {
+  if (dateRange.start) {
     const filteredTransactions = transactions.filter((tx) => {
-      const txDate = new Date(tx.date).toLocaleDateString();
-      const selectedDateStr = new Date(selectedDate).toLocaleDateString();
-      return txDate === selectedDateStr;
+      const txDate = new Date(tx.date);
+      if (!dateRange.end) {
+        // Если выбран только один день
+        return txDate.toDateString() === dateRange.start.toDateString();
+      }
+      // Если выбран диапазон
+      return txDate >= dateRange.start && txDate <= dateRange.end;
     });
 
     const categories = Object.keys(categoryStyles).reduce((acc, key) => {
@@ -85,11 +89,18 @@ const CategoryChart = ({ transactions = [], selectedDate }) => {
     };
 
     totalAmount = values.reduce((sum, amount) => sum + amount, 0);
-    dateString = new Date(selectedDate).toLocaleDateString("ru-RU", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
+
+    const formatDate = (date) => {
+      return date.toLocaleDateString("ru-RU", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+    };
+
+    rangeString = dateRange.end
+      ? `${formatDate(dateRange.start)} - ${formatDate(dateRange.end)}`
+      : formatDate(dateRange.start);
   }
 
   const options = {
@@ -162,10 +173,12 @@ const CategoryChart = ({ transactions = [], selectedDate }) => {
     <div>
       <h3>{totalAmount ? formatAmount(totalAmount) : ""}</h3>
       <CategoryChartH4>
-        {dateString && (
+        {rangeString && (
           <>
-            <CategoryChartSpan1>Расходы за</CategoryChartSpan1>
-            <CategoryChartSpan2>{dateString}</CategoryChartSpan2>
+            <CategoryChartSpan1>
+              {dateRange.end ? "Расходы за период" : "Расходы за"}
+            </CategoryChartSpan1>
+            <CategoryChartSpan2>{rangeString}</CategoryChartSpan2>
           </>
         )}
       </CategoryChartH4>
@@ -182,5 +195,4 @@ const CategoryChart = ({ transactions = [], selectedDate }) => {
     </div>
   );
 };
-
 export default CategoryChart;

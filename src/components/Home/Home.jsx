@@ -64,7 +64,6 @@ const Home = () => {
 
   return (
     <>
-      <GlobalStyle />
       <HomeBackground>
         <HomeHeader>
           <HomeLogo>

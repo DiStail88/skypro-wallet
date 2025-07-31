@@ -22,7 +22,7 @@ import GlobalStyle from "../../GlobalStyle.js";
 const Analisis = () => {
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [dateRange, setDateRange] = useState({ start: null, end: null });
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,6 +30,19 @@ const Analisis = () => {
   const handleLogout = () => {
     logout();
     navigate("/login");
+  };
+
+  const handleDateSelect = (date) => {
+    if (!dateRange.start || dateRange.end) {
+      // Если нет начальной даты или уже есть диапазон - начинаем новый
+      setDateRange({ start: date, end: null });
+    } else if (date < dateRange.start) {
+      // Если выбрана дата раньше начальной - меняем диапазон
+      setDateRange({ start: date, end: dateRange.start });
+    } else {
+      // Завершаем выбор диапазона
+      setDateRange({ ...dateRange, end: date });
+    }
   };
 
   useEffect(() => {
@@ -50,7 +63,6 @@ const Analisis = () => {
 
   return (
     <>
-      <GlobalStyle />
       <AnalisisBackground>
         <AnalisisHeader>
           <AnalisisLogo>
@@ -69,8 +81,10 @@ const Analisis = () => {
           <AnalisisBlock>
             <CalendarBlock>
               <Calendar
-                selectedDate={selectedDate}
-                onSelectDate={setSelectedDate}
+                selectedDate={dateRange.start}
+                rangeStart={dateRange.start}
+                rangeEnd={dateRange.end}
+                onSelectDate={handleDateSelect}
               />
             </CalendarBlock>
 
@@ -82,7 +96,7 @@ const Analisis = () => {
               ) : (
                 <CategoryChart
                   transactions={transactions}
-                  selectedDate={selectedDate}
+                  dateRange={dateRange}
                 />
               )}
             </AnalisisGrafBlock>

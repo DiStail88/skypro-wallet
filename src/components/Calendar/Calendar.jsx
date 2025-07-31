@@ -10,11 +10,19 @@ import {
   CalendarDay,
   CalendarEmptyCell,
   ScrollableCalendarCells,
+  CalendarDayInRange,
 } from "./Calendar.styled.js";
 
 const DAYS_OF_WEEK = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"];
 
-const Month = ({ year, month, selectedDate, onSelectDate }) => {
+const Month = ({
+  year,
+  month,
+  selectedDate,
+  rangeStart,
+  rangeEnd,
+  onSelectDate,
+}) => {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDayOfWeek = new Date(year, month, 1).getDay();
   const startDayIndex = (firstDayOfWeek + 6) % 7;
@@ -26,20 +34,34 @@ const Month = ({ year, month, selectedDate, onSelectDate }) => {
   }
 
   for (let day = 1; day <= daysInMonth; day++) {
+    const currentDate = new Date(year, month, day);
     const isSelected =
       selectedDate &&
-      selectedDate.getDate() === day &&
-      selectedDate.getMonth() === month &&
-      selectedDate.getFullYear() === year;
+      currentDate.toDateString() === selectedDate.toDateString();
+    const isInRange =
+      rangeStart &&
+      rangeEnd &&
+      currentDate >= rangeStart &&
+      currentDate <= rangeEnd;
 
     cells.push(
-      <CalendarDay
-        key={`${year}-${month}-${day}`}
-        $isSelected={isSelected}
-        onClick={() => onSelectDate(new Date(year, month, day))}
-      >
-        {day}
-      </CalendarDay>
+      isInRange ? (
+        <CalendarDayInRange
+          key={`${year}-${month}-${day}`}
+          $isSelected={isSelected}
+          onClick={() => onSelectDate(currentDate)}
+        >
+          {day}
+        </CalendarDayInRange>
+      ) : (
+        <CalendarDay
+          key={`${year}-${month}-${day}`}
+          $isSelected={isSelected}
+          onClick={() => onSelectDate(currentDate)}
+        >
+          {day}
+        </CalendarDay>
+      )
     );
   }
 
@@ -62,7 +84,7 @@ const Month = ({ year, month, selectedDate, onSelectDate }) => {
   );
 };
 
-const Calendar = ({ selectedDate, onSelectDate }) => {
+const Calendar = ({ selectedDate, rangeStart, rangeEnd, onSelectDate }) => {
   const [startDate] = useState(new Date());
 
   const startYear = startDate.getFullYear();
@@ -70,7 +92,6 @@ const Calendar = ({ selectedDate, onSelectDate }) => {
 
   const monthsToShow = 3;
 
-  // Генерируем массив месяцев
   const months = [];
   for (let i = 0; i < monthsToShow; i++) {
     const month = (startMonth + i) % 12;
@@ -78,11 +99,9 @@ const Calendar = ({ selectedDate, onSelectDate }) => {
     months.push({ year, month });
   }
 
-
   return (
     <CalendarWrapper>
       <CalendarTitle>Период</CalendarTitle>
-
       <CalendarTop>
         <CalendarDaysOfWeek>
           {DAYS_OF_WEEK.map((day) => (
@@ -90,8 +109,6 @@ const Calendar = ({ selectedDate, onSelectDate }) => {
           ))}
         </CalendarDaysOfWeek>
       </CalendarTop>
-
-
       <ScrollableCalendarCells>
         {months.map(({ year, month }) => (
           <Month
@@ -99,6 +116,8 @@ const Calendar = ({ selectedDate, onSelectDate }) => {
             year={year}
             month={month}
             selectedDate={selectedDate}
+            rangeStart={rangeStart}
+            rangeEnd={rangeEnd}
             onSelectDate={onSelectDate}
           />
         ))}
